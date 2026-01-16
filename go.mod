@@ -1,3 +1,3 @@
-module github.com/exedev/goheap
+module github.com/earthboundkid/heap
 
-go 1.22.2
+go 1.25

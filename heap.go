@@ -1,5 +1,5 @@
-// Package goheap provides a generic heap implementation wrapping container/heap.
-package goheap
+// Package heap provides a generic heap implementation wrapping container/heap.
+package heap
 
 import "container/heap"
 
