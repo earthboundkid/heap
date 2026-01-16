@@ -13,10 +13,13 @@ go get github.com/exedev/goheap
 ### Min-Heap (default)
 
 ```go
-import "github.com/exedev/goheap"
+import (
+    "cmp"
+    "github.com/exedev/goheap"
+)
 
-// Integer min-heap
-h := goheap.New(func(a, b int) bool { return a < b })
+// Integer min-heap using cmp.Compare
+h := goheap.New(cmp.Compare[int])
 h.Push(3)
 h.Push(1)
 h.Push(4)
@@ -30,7 +33,7 @@ fmt.Println(h.Pop()) // 4
 
 ```go
 // Integer max-heap
-h := goheap.NewMax(func(a, b int) bool { return a < b })
+h := goheap.NewMax(cmp.Compare[int])
 h.Push(3)
 h.Push(1)
 h.Push(4)
@@ -48,8 +51,9 @@ type Task struct {
     Name     string
 }
 
-h := goheap.New(func(a, b Task) bool {
-    return a.Priority < b.Priority
+// Using a cmp function (returns negative, zero, or positive)
+h := goheap.New(func(a, b Task) int {
+    return a.Priority - b.Priority
 })
 
 h.Push(Task{3, "low"})
@@ -61,10 +65,18 @@ fmt.Println(h.Pop().Name) // medium
 fmt.Println(h.Pop().Name) // low
 ```
 
+### Using a Less Function
+
+```go
+// NewMin accepts a less function (returns bool)
+h := goheap.NewMin(func(a, b int) bool { return a < b })
+```
+
 ## API
 
-- `New[T](less func(a, b T) bool) *Heap[T]` - Create a min-heap
-- `NewMax[T](less func(a, b T) bool) *Heap[T]` - Create a max-heap
+- `New[T](cmp func(a, b T) int) *Heap[T]` - Create a min-heap with a cmp function
+- `NewMax[T](cmp func(a, b T) int) *Heap[T]` - Create a max-heap with a cmp function
+- `NewMin[T](less func(a, b T) bool) *Heap[T]` - Create a min-heap with a less function
 - `Push(x T)` - Add an element
 - `Pop() T` - Remove and return the top element
 - `Peek() T` - Return the top element without removing it

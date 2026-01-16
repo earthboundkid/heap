@@ -32,9 +32,36 @@ func (h *heapData[T]) Pop() any {
 }
 
 // New creates a min-heap with the given comparison function.
+// The cmp function should return:
+//   - negative if a < b
+//   - zero if a == b
+//   - positive if a > b
+//
+// For integers: func(a, b int) int { return a - b }
+// Or use cmp.Compare from the standard library.
+func New[T any](cmp func(a, b T) int) *Heap[T] {
+	return NewMin(func(a, b T) bool {
+		return cmp(a, b) < 0
+	})
+}
+
+// NewMax creates a max-heap with the given comparison function.
+// The cmp function should return:
+//   - negative if a < b
+//   - zero if a == b
+//   - positive if a > b
+//
+// The heap will return the largest element first.
+func NewMax[T any](cmp func(a, b T) int) *Heap[T] {
+	return NewMin(func(a, b T) bool {
+		return cmp(a, b) > 0
+	})
+}
+
+// NewMin creates a min-heap with the given less function.
 // The less function should return true if a should come before b.
 // For a min-heap of integers: func(a, b int) bool { return a < b }
-func New[T any](less func(a, b T) bool) *Heap[T] {
+func NewMin[T any](less func(a, b T) bool) *Heap[T] {
 	h := &Heap[T]{
 		data: &heapData[T]{
 			items: make([]T, 0),
@@ -43,15 +70,6 @@ func New[T any](less func(a, b T) bool) *Heap[T] {
 	}
 	heap.Init(h.data)
 	return h
-}
-
-// NewMax creates a max-heap with the given comparison function.
-// The less function should define the natural ordering (e.g., a < b for integers).
-// The heap will return the largest element first.
-func NewMax[T any](less func(a, b T) bool) *Heap[T] {
-	return New(func(a, b T) bool {
-		return less(b, a) // reverse the comparison
-	})
 }
 
 // Push adds an element to the heap.

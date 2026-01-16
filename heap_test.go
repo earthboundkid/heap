@@ -1,9 +1,12 @@
 package goheap
 
-import "testing"
+import (
+	"cmp"
+	"testing"
+)
 
 func TestMinHeapInt(t *testing.T) {
-	h := New(func(a, b int) bool { return a < b })
+	h := New(cmp.Compare[int])
 
 	h.Push(3)
 	h.Push(1)
@@ -32,7 +35,7 @@ func TestMinHeapInt(t *testing.T) {
 }
 
 func TestMaxHeapInt(t *testing.T) {
-	h := NewMax(func(a, b int) bool { return a < b })
+	h := NewMax(cmp.Compare[int])
 
 	h.Push(3)
 	h.Push(1)
@@ -50,7 +53,7 @@ func TestMaxHeapInt(t *testing.T) {
 }
 
 func TestPeek(t *testing.T) {
-	h := New(func(a, b int) bool { return a < b })
+	h := New(cmp.Compare[int])
 
 	h.Push(5)
 	h.Push(3)
@@ -71,8 +74,24 @@ type task struct {
 	name     string
 }
 
+func TestNewMinWithLess(t *testing.T) {
+	h := NewMin(func(a, b int) bool { return a < b })
+
+	h.Push(3)
+	h.Push(1)
+	h.Push(4)
+
+	expected := []int{1, 3, 4}
+	for i, want := range expected {
+		got := h.Pop()
+		if got != want {
+			t.Errorf("pop %d: expected %d, got %d", i, want, got)
+		}
+	}
+}
+
 func TestStructHeap(t *testing.T) {
-	h := New(func(a, b task) bool { return a.priority < b.priority })
+	h := New(func(a, b task) int { return a.priority - b.priority })
 
 	h.Push(task{3, "low"})
 	h.Push(task{1, "high"})
@@ -88,7 +107,7 @@ func TestStructHeap(t *testing.T) {
 }
 
 func TestStringHeap(t *testing.T) {
-	h := New(func(a, b string) bool { return a < b })
+	h := New(cmp.Compare[string])
 
 	h.Push("banana")
 	h.Push("apple")
