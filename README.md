@@ -1,4 +1,4 @@
-# goheap
+# heap
 
 A generic heap (priority queue) for Go, wrapping `container/heap`.
 
